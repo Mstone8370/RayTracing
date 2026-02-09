@@ -502,6 +502,7 @@ Testing/
 
 
 CLAUDE.md
+.claude/
 
 *.ppm
 *.png
