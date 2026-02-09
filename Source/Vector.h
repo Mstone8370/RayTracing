@@ -21,6 +21,11 @@ public:
 
     FVector operator-() const { return FVector(-X, -Y, -Z); }
 
+    FVector operator+(double Value) const
+    {
+        return FVector(X + Value, Y + Value, Z + Value);
+    }
+
     FVector& operator+=(const FVector& Other)
     {
         X += Other.X;
@@ -55,6 +60,10 @@ public:
     FVector GetNormal(double Tolerance = 1.e-8) const
     {
         const double SquaredLength = X * X + Y * Y + Z * Z;
+        if (SquaredLength == 1.0)
+        {
+            return *this;
+        }
         if (SquaredLength < Tolerance)
         {
             return FVector::ZeroVector;

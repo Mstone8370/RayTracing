@@ -5,8 +5,47 @@
 
 #include <iostream>
 
+double HitSphere(const FVector& SphereCenter, double SphereRadius, const FRay& Ray)
+{
+    FVector SphereCenterVector = SphereCenter - Ray.Origin;
+    /*
+    double a = Dot(Ray.Direction, Ray.Direction);
+    double b = -2.0 * Dot(Ray.Direction, SphereCenterVector);
+    double c = Dot(SphereCenterVector, SphereCenterVector) - SphereRadius * SphereRadius;
+    double Discriminant = b * b - 4 * a * c;
+    if (Discriminant < 0)
+    {
+        return -1.0;
+    }
+    else
+    {
+        return (-b - std::sqrt(Discriminant)) / (2.0 * a);
+    }
+    */
+    double a = Ray.Direction.LengthSquared();
+    double h = Dot(Ray.Direction, SphereCenterVector);
+    double c = SphereCenterVector.LengthSquared() - SphereRadius * SphereRadius;
+    double Discriminant = h * h - a * c;
+
+    if (Discriminant < 0)
+    {
+        return -1.0;
+    }
+    else
+    {
+        return (h - std::sqrt(Discriminant)) / a;
+    }
+}
+
 FColor RayColor(const FRay& Ray)
 {
+    double t = HitSphere(FVector(1.0, 0.0, 0.0), 0.5, Ray);
+    if (t > 0.0)
+    {
+        FVector N = (Ray.At(t) - FVector(1.0, 0.0, 0.0)).GetNormal();
+        return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);
+    }
+
     double a = 0.5 * (Ray.Direction.Z + 1.0);
     return (1.0 - a) * FColor(1.0, 1.0, 1.0) + a * FColor(0.5, 0.7, 1.0);
 }
