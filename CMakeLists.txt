@@ -9,7 +9,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # 실행 파일 생성
-add_executable(RayTracing Source/main.cpp)
+add_executable(RayTracing
+    Source/main.cpp
+    Source/Vector.cpp
+)
 
 # 컴파일러별 경고 설정
 if (MSVC)
