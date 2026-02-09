@@ -8,7 +8,7 @@ struct FHitRecord
 {
     FVector Point = FVector::ZeroVector;
     FVector Normal = FVector::ForwardVector;
-    double T = 0.0;
+    double HitT = 0.0;
 };
 
 class FHittable

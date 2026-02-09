@@ -28,7 +28,7 @@ bool FSphere::Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitR
         }
     }
 
-    OutHitRecord.T = T;
+    OutHitRecord.HitT = T;
     OutHitRecord.Point = Ray.At(T);
     OutHitRecord.Normal = (OutHitRecord.Point - Location) / Radius;
 

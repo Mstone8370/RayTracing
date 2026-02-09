@@ -7,15 +7,22 @@
 
 #include <iostream>
 
+FVector LightLocation(-0.7, 0.5, 1.0);
+double LightIntensity = 1.5;
+
 FColor RayColor(const FRay& Ray)
 {
     FSphere Sphere(FVector(1.0, 0.0, 0.0), 0.5);
     
     FHitRecord HitRecord;
-    if (Sphere.Hit(Ray, 0.001, std::numeric_limits<double>::infinity(), HitRecord))
+    if (Sphere.Hit(Ray, 0.001, 100.0, HitRecord))
     {
-        FVector N = HitRecord.Normal;
-        return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);
+        FVector N = HitRecord.Normal.GetNormal();
+        // return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);
+        FVector Pos = HitRecord.Point;
+        FVector LightDir = LightLocation.GetNormal();
+        FVector BaseColor(0.7, 0.7, 0.7);
+        return std::fmax(0.0, Dot(LightDir, N)) * BaseColor * LightIntensity;
     }
 
     double a = 0.5 * (Ray.Direction.Z + 1.0);
