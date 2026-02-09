@@ -2,47 +2,19 @@
 #include "Vector.h"
 #include "Color.h"
 #include "Ray.h"
+#include "Hittable.h"
+#include "Sphere.h"
 
 #include <iostream>
 
-double HitSphere(const FVector& SphereCenter, double SphereRadius, const FRay& Ray)
-{
-    FVector SphereCenterVector = SphereCenter - Ray.Origin;
-    /*
-    double a = Dot(Ray.Direction, Ray.Direction);
-    double b = -2.0 * Dot(Ray.Direction, SphereCenterVector);
-    double c = Dot(SphereCenterVector, SphereCenterVector) - SphereRadius * SphereRadius;
-    double Discriminant = b * b - 4 * a * c;
-    if (Discriminant < 0)
-    {
-        return -1.0;
-    }
-    else
-    {
-        return (-b - std::sqrt(Discriminant)) / (2.0 * a);
-    }
-    */
-    double a = Ray.Direction.LengthSquared();
-    double h = Dot(Ray.Direction, SphereCenterVector);
-    double c = SphereCenterVector.LengthSquared() - SphereRadius * SphereRadius;
-    double Discriminant = h * h - a * c;
-
-    if (Discriminant < 0)
-    {
-        return -1.0;
-    }
-    else
-    {
-        return (h - std::sqrt(Discriminant)) / a;
-    }
-}
-
 FColor RayColor(const FRay& Ray)
 {
-    double t = HitSphere(FVector(1.0, 0.0, 0.0), 0.5, Ray);
-    if (t > 0.0)
+    FSphere Sphere(FVector(1.0, 0.0, 0.0), 0.5);
+    
+    FHitRecord HitRecord;
+    if (Sphere.Hit(Ray, 0.001, std::numeric_limits<double>::infinity(), HitRecord))
     {
-        FVector N = (Ray.At(t) - FVector(1.0, 0.0, 0.0)).GetNormal();
+        FVector N = HitRecord.Normal;
         return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);
     }
 

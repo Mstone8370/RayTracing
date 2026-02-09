@@ -12,6 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(RayTracing
     Source/main.cpp
     Source/Vector.cpp
+    Source/Sphere.cpp
 )
 
 # 컴파일러별 경고 설정
