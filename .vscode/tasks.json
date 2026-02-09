@@ -1,0 +1,114 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-B",
+                "build",
+                "-S",
+                "."
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "CMake 프로젝트 설정"
+        },
+        {
+            "label": "CMake: Build Debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--config",
+                "Debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "dependsOn": ["CMake: Configure"],
+            "detail": "Debug 모드로 빌드"
+        },
+        {
+            "label": "CMake: Build Release",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--config",
+                "Release"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "dependsOn": ["CMake: Configure"],
+            "detail": "Release 모드로 빌드"
+        },
+        {
+            "label": "CMake: Clean",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "build",
+                "--target",
+                "clean"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "빌드 파일 정리"
+        },
+        {
+            "label": "Run Debug",
+            "type": "shell",
+            "command": ".\\build\\Debug\\RayTracing.exe > output.ppm",
+            "group": "test",
+            "dependsOn": ["CMake: Build Debug"],
+            "detail": "Debug 빌드 실행 (output.ppm 생성)"
+        },
+        {
+            "label": "Run Release",
+            "type": "shell",
+            "command": ".\\build\\Release\\RayTracing.exe > output.ppm",
+            "group": "test",
+            "dependsOn": ["CMake: Build Release"],
+            "detail": "Release 빌드 실행 (output.ppm 생성)"
+        },
+        {
+            "label": "Convert PPM to PNG",
+            "type": "shell",
+            "command": "magick",
+            "args": [
+                "output.ppm",
+                "output.png"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "output.ppm을 output.png로 변환"
+        },
+        {
+            "label": "Build and Run Debug (PNG)",
+            "type": "shell",
+            "command": ".\\build\\Debug\\RayTracing.exe > output.ppm && magick output.ppm output.png",
+            "group": "test",
+            "dependsOn": ["CMake: Build Debug"],
+            "detail": "Debug 빌드 → 실행 → PNG 변환 (한번에)"
+        },
+        {
+            "label": "Build and Run Release (PNG)",
+            "type": "shell",
+            "command": ".\\build\\Release\\RayTracing.exe > output.ppm && magick output.ppm output.png",
+            "group": "test",
+            "dependsOn": ["CMake: Build Release"],
+            "detail": "Release 빌드 → 실행 → PNG 변환 (한번에)"
+        }
+    ]
+}
