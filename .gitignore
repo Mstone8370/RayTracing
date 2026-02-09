@@ -429,6 +429,19 @@ FodyWeavers.xsd
 
 
 
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+!*.code-workspace
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+
+
 # Prerequisites
 *.d
 
@@ -498,3 +511,7 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+
+
+CLAUDE.md
