@@ -7,7 +7,8 @@
 
 #include <iostream>
 
-FVector LightLocation(-0.7, 0.5, 1.0);
+FVector LightDirection(-0.7, 0.5, 1.0);
+FVector L = LightDirection.GetSafeNormal();
 double LightIntensity = 4.0;
 const double PI = 3.1415926535897932385;
 
@@ -42,10 +43,9 @@ FColor RayColor(const FRay& Ray)
     FHitRecord HitRecord;
     if (Sphere.Hit(Ray, 0.001, 100.0, HitRecord))
     {
-        FVector N = HitRecord.Normal.GetNormal();
+        FVector N = HitRecord.Normal.GetSafeNormal();
         // return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);
         FVector Pos = HitRecord.Point;
-        FVector L = LightLocation.GetNormal();
         
         FVector BaseColor(0.7, 0.7, 0.7);
         double Roughness = 0.5;
@@ -53,8 +53,8 @@ FColor RayColor(const FRay& Ray)
         FVector F0 = (1.0 - Metallic) * FVector(0.04, 0.04, 0.04) + Metallic * BaseColor;
         FVector F90(1.0, 1.0, 1.0);
 
-        FVector V = (-Ray.Direction).GetNormal();
-        FVector H = (L + V).GetNormal();
+        FVector V = (-Ray.Direction).GetSafeNormal();
+        FVector H = (L + V).GetSafeNormal();
 
         double a = Roughness * Roughness;
         double a2 = a * a;
@@ -71,7 +71,7 @@ FColor RayColor(const FRay& Ray)
         FVector Specular = D * Vis * F;
 
         // Diffuse
-        double kD = 1.0 - Metallic;
+        FVector kD = (1.0 - Metallic) * (FVector(1.0, 1.0, 1.0) - F);
         FVector Diffuse = BaseColor / PI;
         Diffuse *= kD;
 
@@ -120,7 +120,7 @@ int main()
         {
             FVector PixelCenterWorld = Pixel00Location + i * PixelDeltaWorldU + j * PixelDeltaWorldV;
             FVector RayDirection = PixelCenterWorld - CameraCenter;
-            FRay Ray(CameraCenter, RayDirection.GetNormal());
+            FRay Ray(CameraCenter, RayDirection.GetSafeNormal());
 
             FColor PixelColor = RayColor(Ray);
             WriteColor(std::cout, PixelColor);

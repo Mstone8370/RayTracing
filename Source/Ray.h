@@ -15,7 +15,7 @@ public:
 
     FRay(const FVector& InOrigin, const FVector& InDirection)
         : Origin(InOrigin)
-        , Direction(InDirection.GetNormal())
+        , Direction(InDirection.GetSafeNormal())
     {}
 
     FVector At(double T) const
