@@ -3,7 +3,7 @@
 #include "Math.h"
 #include "Ray.h"
 
-bool FSphere::Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitRecord) const
+bool FSphere::Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const
 {
     FVector ToSphere = Location - Ray.Origin;
 
@@ -19,18 +19,18 @@ bool FSphere::Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitR
 
     double SquaredDiscriminant = Sqrt(Discriminant);
 
-    double T = (h - SquaredDiscriminant) / a;
-    if (T <= TMin || T >= TMax)
+    double HitT = (h - SquaredDiscriminant) / a;
+    if (!Interval.Surrounds(HitT))
     {
-        T = (h + SquaredDiscriminant) / a;
-        if (T <= TMin || T >= TMax)
+        HitT = (h + SquaredDiscriminant) / a;
+        if (!Interval.Surrounds(HitT))
         {
             return false;
         }
     }
 
-    OutHitRecord.HitT = T;
-    OutHitRecord.Point = Ray.At(T);
+    OutHitRecord.HitT = HitT;
+    OutHitRecord.Point = Ray.At(HitT);
     FVector OutwardNormal = (OutHitRecord.Point - Location) / Radius;
     OutHitRecord.SetFaceNormal(Ray, OutwardNormal);
 

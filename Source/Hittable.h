@@ -2,6 +2,7 @@
 
 #include "Vector.h"
 #include "Ray.h"
+#include "Interval.h"
 
 struct FHitRecord
 {
@@ -22,5 +23,5 @@ class IHittable
 public:
     virtual ~IHittable() = default;
     
-    virtual bool Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitRecord) const = 0;
+    virtual bool Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const = 0;
 };

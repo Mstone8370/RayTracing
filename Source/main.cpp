@@ -6,6 +6,7 @@
 #include "Hittable.h"
 #include "HittableList.h"
 #include "Sphere.h"
+#include "Interval.h"
 
 #include <iostream>
 
@@ -35,7 +36,7 @@ FVector F_Schlick(FVector F0, FVector F90, double VoH)
 FColor RayColor(const FRay& Ray, const IHittable& World)
 {
     FHitRecord HitRecord;
-    if (World.Hit(Ray, 0.001, 100.0, HitRecord))
+    if (World.Hit(Ray, FInterval(0.001, Inf), HitRecord))
     {
         FVector N = HitRecord.Normal.GetSafeNormal();
         // return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);

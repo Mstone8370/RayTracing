@@ -5,6 +5,8 @@
 #include <memory>
 #include <vector>
 
+#include "Interval.h"
+
 class FHittableList : public IHittable
 {
 public:
@@ -26,22 +28,17 @@ public:
         Objects.clear();
     }
 
-    bool Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitRecord) const override
+    bool Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const override
     {
         FHitRecord TempRecord;
         bool bHit = false;
-        double ClosestHitT = TMax;
+        double ClosestHitT = Interval.Max;
 
         for (const std::shared_ptr<IHittable>& Object : Objects)
         {
-            if (Object->Hit(Ray, TMin, ClosestHitT, TempRecord))
+            if (Object->Hit(Ray, FInterval(Interval.Min, ClosestHitT), TempRecord))
             {
                 bHit = true;
-                // if (TempRecord.HitT < ClosestHitT)
-                // {
-                //     ClosestHitT = TempRecord.HitT;
-                //     OutHitRecord = TempRecord;
-                // }
                 ClosestHitT = TempRecord.HitT;
                 OutHitRecord = TempRecord;
             }

@@ -10,7 +10,7 @@ public:
         , Radius(std::fmax(0.0, InRadius))
     {}
 
-    virtual bool Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitRecord) const override;
+    virtual bool Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const override;
 
     FVector GetLocation() const { return Location; }
     double GetRadius() const { return Radius; }
