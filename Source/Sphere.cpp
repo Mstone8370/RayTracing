@@ -1,5 +1,6 @@
 #include "Sphere.h"
 
+#include "Math.h"
 #include "Ray.h"
 
 bool FSphere::Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitRecord) const
@@ -16,7 +17,7 @@ bool FSphere::Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitR
         return false;
     }
 
-    double SquaredDiscriminant = std::sqrt(Discriminant);
+    double SquaredDiscriminant = Sqrt(Discriminant);
 
     double T = (h - SquaredDiscriminant) / a;
     if (T <= TMin || T >= TMax)
@@ -30,7 +31,8 @@ bool FSphere::Hit(const FRay& Ray, double TMin, double TMax, FHitRecord& OutHitR
 
     OutHitRecord.HitT = T;
     OutHitRecord.Point = Ray.At(T);
-    OutHitRecord.Normal = (OutHitRecord.Point - Location) / Radius;
+    FVector OutwardNormal = (OutHitRecord.Point - Location) / Radius;
+    OutHitRecord.SetFaceNormal(Ray, OutwardNormal);
 
     return true;
 }

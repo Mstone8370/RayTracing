@@ -1,8 +1,10 @@
 
+#include "Math.h"
 #include "Vector.h"
 #include "Color.h"
 #include "Ray.h"
 #include "Hittable.h"
+#include "HittableList.h"
 #include "Sphere.h"
 
 #include <iostream>
@@ -10,12 +12,6 @@
 FVector LightDirection(-0.7, 0.5, 1.0);
 FVector L = LightDirection.GetSafeNormal();
 double LightIntensity = 4.0;
-const double PI = 3.1415926535897932385;
-
-double Pow5(double x)
-{
-    return x * x * x * x * x;
-}
 
 double D_GGX(double a2, double NoH)
 {
@@ -36,12 +32,10 @@ FVector F_Schlick(FVector F0, FVector F90, double VoH)
     return F90 * Fc + (1 - Fc) * F0;
 }
 
-FColor RayColor(const FRay& Ray)
+FColor RayColor(const FRay& Ray, const IHittable& World)
 {
-    FSphere Sphere(FVector(1.0, 0.0, 0.0), 0.5);
-    
     FHitRecord HitRecord;
-    if (Sphere.Hit(Ray, 0.001, 100.0, HitRecord))
+    if (World.Hit(Ray, 0.001, 100.0, HitRecord))
     {
         FVector N = HitRecord.Normal.GetSafeNormal();
         // return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);
@@ -50,7 +44,7 @@ FColor RayColor(const FRay& Ray)
         FVector BaseColor(0.7, 0.7, 0.7);
         double Roughness = 0.5;
         double Metallic = 0.0;
-        FVector F0 = (1.0 - Metallic) * FVector(0.04, 0.04, 0.04) + Metallic * BaseColor;
+        FVector F0 = Lerp(FVector(0.04, 0.04, 0.04), BaseColor, Metallic);
         FVector F90(1.0, 1.0, 1.0);
 
         FVector V = (-Ray.Direction).GetSafeNormal();
@@ -58,10 +52,10 @@ FColor RayColor(const FRay& Ray)
 
         double a = Roughness * Roughness;
         double a2 = a * a;
-        double NoH = std::fmax(0.0, Dot(N, H));
-        double NoV = std::fmax(0.0, Dot(N, V));
-        double NoL = std::fmax(0.0, Dot(N, L));
-        double VoH = std::fmax(0.0, Dot(V, H));
+        double NoH = Max(0.0, Dot(N, H));
+        double NoV = Max(0.0, Dot(N, V));
+        double NoL = Max(0.0, Dot(N, L));
+        double VoH = Max(0.0, Dot(V, H));
 
         // Specular
         double D = D_GGX(a2, NoH);
@@ -84,12 +78,16 @@ FColor RayColor(const FRay& Ray)
 
 int main()
 {
-
     // Image
     double AspectRatio = 16.0 / 9.0;
     int ImageWidth = 1280;
     int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
     ImageHeight = ImageHeight < 1 ? 1 : ImageHeight;
+
+    // World
+    FHittableList World;
+    World.Add(std::make_shared<FSphere>(FVector(1.0, 0.0, 0.0), 0.5));
+    World.Add(std::make_shared<FSphere>(FVector(-1.0, 0.0, -100.5), 100.0));
 
     // Camera
     double FocalLength = 1.0;
@@ -122,7 +120,7 @@ int main()
             FVector RayDirection = PixelCenterWorld - CameraCenter;
             FRay Ray(CameraCenter, RayDirection.GetSafeNormal());
 
-            FColor PixelColor = RayColor(Ray);
+            FColor PixelColor = RayColor(Ray, World);
             WriteColor(std::cout, PixelColor);
         }
     }
