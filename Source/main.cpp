@@ -8,7 +8,32 @@
 #include <iostream>
 
 FVector LightLocation(-0.7, 0.5, 1.0);
-double LightIntensity = 1.5;
+double LightIntensity = 4.0;
+const double PI = 3.1415926535897932385;
+
+double Pow5(double x)
+{
+    return x * x * x * x * x;
+}
+
+double D_GGX(double a2, double NoH)
+{
+    double d = (NoH * a2 - NoH) * NoH + 1.0;
+    return a2 / (PI * d * d);
+}
+
+double Vis_SmithJoint(double a2, double NoV, double NoL) 
+{
+    double Vis_SmithV = NoL * sqrt(NoV * (NoV - NoV * a2) + a2);
+    double Vis_SmithL = NoV * sqrt(NoL * (NoL - NoL * a2) + a2);
+    return 0.5 / (Vis_SmithV + Vis_SmithL);
+}
+
+FVector F_Schlick(FVector F0, FVector F90, double VoH)
+{
+    double Fc = Pow5(1 - VoH);
+    return F90 * Fc + (1 - Fc) * F0;
+}
 
 FColor RayColor(const FRay& Ray)
 {
@@ -20,9 +45,37 @@ FColor RayColor(const FRay& Ray)
         FVector N = HitRecord.Normal.GetNormal();
         // return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);
         FVector Pos = HitRecord.Point;
-        FVector LightDir = LightLocation.GetNormal();
+        FVector L = LightLocation.GetNormal();
+        
         FVector BaseColor(0.7, 0.7, 0.7);
-        return std::fmax(0.0, Dot(LightDir, N)) * BaseColor * LightIntensity;
+        double Roughness = 0.5;
+        double Metallic = 0.0;
+        FVector F0 = (1.0 - Metallic) * FVector(0.04, 0.04, 0.04) + Metallic * BaseColor;
+        FVector F90(1.0, 1.0, 1.0);
+
+        FVector V = (-Ray.Direction).GetNormal();
+        FVector H = (L + V).GetNormal();
+
+        double a = Roughness * Roughness;
+        double a2 = a * a;
+        double NoH = std::fmax(0.0, Dot(N, H));
+        double NoV = std::fmax(0.0, Dot(N, V));
+        double NoL = std::fmax(0.0, Dot(N, L));
+        double VoH = std::fmax(0.0, Dot(V, H));
+
+        // Specular
+        double D = D_GGX(a2, NoH);
+        double Vis = Vis_SmithJoint(a2, NoV, NoL);
+        FVector F = F_Schlick(F0, F90, VoH);
+
+        FVector Specular = D * Vis * F;
+
+        // Diffuse
+        double kD = 1.0 - Metallic;
+        FVector Diffuse = BaseColor / PI;
+        Diffuse *= kD;
+
+        return (Diffuse + Specular) * LightIntensity * NoL;
     }
 
     double a = 0.5 * (Ray.Direction.Z + 1.0);
