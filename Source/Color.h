@@ -6,7 +6,7 @@
 
 using FColor = FVector;
 
-void WriteColor(std::ostream& Out, const FVector& PixelColor)
+inline void WriteColor(std::ostream& Out, const FVector& PixelColor)
 {
     int R = static_cast<int>(255.999 * PixelColor.X);
     int G = static_cast<int>(255.999 * PixelColor.Y);
