@@ -17,7 +17,7 @@ int main()
     World.Add(std::make_shared<FSphere>(FVector(1.0, 0.0, 0.0), 0.5));
     World.Add(std::make_shared<FSphere>(FVector(-1.0, 0.0, -100.5), 100.0));
 
-    FCamera Camera(16.0 / 9.0, 540);
+    FCamera Camera(16.0 / 9.0, 320);
     Camera.SetSamplesPerPixel(100);
 
     Camera.Render(World);

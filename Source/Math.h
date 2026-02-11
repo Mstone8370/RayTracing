@@ -3,6 +3,7 @@
 #include <limits>
 #include <cmath>
 #include <random>
+#include "Vector.h"
 
 constexpr double Inf = std::numeric_limits<double>::infinity();
 constexpr double PI = 3.1415926535897932385;
@@ -39,6 +40,42 @@ namespace FMath
     inline double RandomDouble(double Min, double Max)
     {
         return Min + (Max - Min) * RandomDouble();
+    }
+
+    inline FVector RandomVector()
+    {
+        return FVector(RandomDouble(), RandomDouble(), RandomDouble());
+    }
+
+    inline FVector RandomVector(double Min, double Max)
+    {
+        return FVector(RandomDouble(Min, Max), RandomDouble(Min, Max), RandomDouble(Min, Max));
+    }
+
+    inline FVector RandomUnitVector()
+    {
+        while (true)
+        {
+            const FVector V = RandomVector(-1.0, 1.0);
+            const double SquaredLength = V.LengthSquared();
+            if (1e-16 < SquaredLength && SquaredLength <= 1.0)
+            {
+                return V.GetSafeNormal();
+            }
+        }
+    }
+
+    inline FVector RandomUnitVectorOnHemisphere(const FVector& Normal)
+    {
+        const FVector OnUnitSphere = RandomUnitVector();
+        if (Dot(OnUnitSphere, Normal) > 0.0)
+        {
+            return OnUnitSphere;
+        }
+        else
+        {
+            return -OnUnitSphere;
+        }
     }
 
     template<typename T>

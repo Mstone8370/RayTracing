@@ -124,8 +124,10 @@ FColor FCamera::RayColor(const FRay &Ray, const IHittable& World) const
     FHitRecord HitRecord;
     if (World.Hit(Ray, FInterval(0.001, Inf), HitRecord))
     {
+        FVector NewDirection = FMath::RandomUnitVectorOnHemisphere(HitRecord.Normal);
+        return 0.5 * RayColor(FRay(HitRecord.Point, NewDirection), World); // Grey diffuse
+        /*
         FVector N = HitRecord.Normal.GetSafeNormal();
-        // return 0.5 * FColor(N.X + 1.0, N.Y + 1.0, N.Z + 1.0);
         FVector Pos = HitRecord.Point;
         
         FVector BaseColor(0.7, 0.7, 0.7);
@@ -157,6 +159,7 @@ FColor FCamera::RayColor(const FRay &Ray, const IHittable& World) const
         Diffuse *= kD;
 
         return (Diffuse + Specular) * LightIntensity * NoL;
+        */
     }
 
     double a = 0.5 * (Ray.Direction.Z + 1.0);
