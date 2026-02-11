@@ -129,8 +129,7 @@ FColor FCamera::RayColor(const FRay &Ray, const IHittable& World, int Depth) con
     FHitRecord HitRecord;
     if (World.Hit(Ray, FInterval(0.001, Inf), HitRecord))
     {
-        // FVector NewDirection = FMath::RandomUnitVectorOnHemisphere(HitRecord.Normal);
-        FVector NewDirection = HitRecord.Normal + FMath::RandomUnitVector();
+        FVector NewDirection = (HitRecord.Normal + FMath::RandomUnitVector()).GetSafeNormal();
         return 0.5 * RayColor(FRay(HitRecord.Point, NewDirection), World, Depth + 1); // Grey diffuse
     }
 
