@@ -19,7 +19,7 @@ int main()
 
     FCamera Camera(16.0 / 9.0, 360);
     Camera.SetSamplesPerPixel(100);
-    Camera.SetMaxDepth(10);
+    Camera.SetMaxDepth(50);
 
     Camera.Render(World);
 }

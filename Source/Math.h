@@ -20,6 +20,11 @@ namespace FMath
         return Radians * 180.0 / PI;
     }
 
+    inline double Pow(double Base, double Exponent)
+    {
+        return std::pow(Base, Exponent);
+    }
+
     inline double Pow5(double X)
     {
         return X * X * X * X * X;
