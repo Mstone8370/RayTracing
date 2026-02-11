@@ -16,8 +16,8 @@ int main()
 {
     std::shared_ptr<IMaterial> GroundMaterial = std::make_shared<MLambertian>(FVector(0.8, 0.8, 0.0));
     std::shared_ptr<IMaterial> CenterMaterial = std::make_shared<MLambertian>(FVector(0.1, 0.2, 0.5));
-    std::shared_ptr<IMaterial> LeftMaterial = std::make_shared<MMetal>(FVector(0.8, 0.8, 0.8));
-    std::shared_ptr<IMaterial> RightMaterial = std::make_shared<MMetal>(FVector(0.8, 0.6, 0.2));
+    std::shared_ptr<IMaterial> LeftMaterial = std::make_shared<MMetal>(FVector(0.8, 0.8, 0.8), 0.3);
+    std::shared_ptr<IMaterial> RightMaterial = std::make_shared<MMetal>(FVector(0.8, 0.6, 0.2), 1.0);
 
     FHittableList World;
     World.Add(std::make_shared<FSphere>(FVector(-1.0, 0.0, -100.5), 100.0, GroundMaterial));

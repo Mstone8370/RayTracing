@@ -42,7 +42,7 @@ public:
             ScatterDirection = HitRecord.Normal;
         }
         
-        OutScatteredRay = FRay(HitRecord.HitLocation, ScatterDirection);
+        OutScatteredRay = FRay(HitRecord.HitLocation, ScatterDirection.GetSafeNormal());
         OutAttenuation = Albedo;
         
         return true;
@@ -53,17 +53,22 @@ public:
 class MMetal : public IMaterial
 {
 public:
-    MMetal(const FVector& InAlbedo)
+    MMetal(const FVector& InAlbedo, double InFuzziness = 0.0)
         : IMaterial(InAlbedo)
+        , Fuzziness(FMath::Clamp(InFuzziness, 0.0, 1.0))
     {}
 
     virtual bool Scatter(const FRay& InRay, const FHitRecord& HitRecord, FVector& OutAttenuation, FRay& OutScatteredRay) const override
     {
-        FVector ScatterDirection = FMath::Reflect(InRay.Direction, HitRecord.Normal);
+        FVector ReflectedDirection = FMath::Reflect(InRay.Direction, HitRecord.Normal);
+        ReflectedDirection += Fuzziness * FMath::RandomUnitVector();
         
-        OutScatteredRay = FRay(HitRecord.HitLocation, ScatterDirection);
+        OutScatteredRay = FRay(HitRecord.HitLocation, ReflectedDirection.GetSafeNormal());
         OutAttenuation = Albedo;
         
-        return true;
+        return Dot(OutScatteredRay.Direction, HitRecord.Normal) > 0.0;
     }
+
+protected:
+    double Fuzziness;
 };
