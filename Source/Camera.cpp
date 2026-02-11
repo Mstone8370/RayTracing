@@ -19,7 +19,7 @@ double Vis_SmithJoint(double a2, double NoV, double NoL)
 
 FVector F_Schlick(FVector F0, FVector F90, double VoH)
 {
-    double Fc = Pow5(1 - VoH);
+    double Fc = FMath::Pow5(1 - VoH);
     return F90 * Fc + (1 - Fc) * F0;
 }
 
@@ -28,20 +28,19 @@ void FCamera::Render(const IHittable &World)
 {
     Initialize();
 
-
     std::cout << "P3\n" << ImageWidth << ' ' << ImageHeight << "\n255\n";
-    for (int j = 0; j < ImageHeight; j++)
+    for (int PixelY = 0; PixelY < ImageHeight; ++PixelY)
     {
-        std::clog << "\rScanlines remaining: " << (ImageHeight - j) << ' ' << std::flush;
-        for (int i = 0; i < ImageWidth; i++)
+        std::clog << "\rScanlines remaining: " << (ImageHeight - PixelY) << ' ' << std::flush;
+        for (int PixelX = 0; PixelX < ImageWidth; ++PixelX)
         {
-            FVector PixelLocation = Pixel00Location + i * PixelDeltaU + j * PixelDeltaV;
-            FVector RayDirection = PixelLocation - Location;
-            
-            FRay Ray(Location, RayDirection.GetSafeNormal());
-
-            FColor PixelColor = RayColor(Ray, World);
-            WriteColor(std::cout, PixelColor);
+            FColor PixelColor(0.0, 0.0, 0.0);
+            for (int Sample = 0; Sample < SamplesPerPixel; ++Sample)
+            {
+                FRay Ray = GetRay(PixelX, PixelY);
+                PixelColor += RayColor(Ray, World);
+            }
+            WriteColor(std::cout, PixelColor * PixelSampleScale);
         }
     }
 
@@ -68,6 +67,16 @@ void FCamera::SetImageWidth(int InImageWitdh)
     }
 }
 
+void FCamera::SetSamplesPerPixel(int InSamplesPerPixel)
+{
+    if (InSamplesPerPixel > 0)
+    {
+        SamplesPerPixel = InSamplesPerPixel;
+
+        Initialize();
+    }
+}
+
 void FCamera::SetLocation(const FVector &InLocation)
 {
     Location = InLocation;
@@ -86,6 +95,8 @@ void FCamera::Initialize()
 {
     ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
     ImageHeight = ImageHeight < 1 ? 1 : ImageHeight;
+
+    PixelSampleScale = 1.0 / static_cast<double>(SamplesPerPixel);
 
     Location = FVector::ZeroVector;
     Direction = FVector::ForwardVector;
@@ -120,7 +131,7 @@ FColor FCamera::RayColor(const FRay &Ray, const IHittable& World) const
         FVector BaseColor(0.7, 0.7, 0.7);
         double Roughness = 0.5;
         double Metallic = 0.0;
-        FVector F0 = Lerp(FVector(0.04, 0.04, 0.04), BaseColor, Metallic);
+        FVector F0 = FMath::Lerp(FVector(0.04, 0.04, 0.04), BaseColor, Metallic);
         FVector F90(1.0, 1.0, 1.0);
 
         FVector V = (-Ray.Direction).GetSafeNormal();
@@ -128,10 +139,10 @@ FColor FCamera::RayColor(const FRay &Ray, const IHittable& World) const
 
         double a = Roughness * Roughness;
         double a2 = a * a;
-        double NoH = Max(0.0, Dot(N, H));
-        double NoV = Max(0.0, Dot(N, V));
-        double NoL = Max(0.0, Dot(N, L));
-        double VoH = Max(0.0, Dot(V, H));
+        double NoH = FMath::Max(0.0, Dot(N, H));
+        double NoV = FMath::Max(0.0, Dot(N, V));
+        double NoL = FMath::Max(0.0, Dot(N, L));
+        double VoH = FMath::Max(0.0, Dot(V, H));
 
         // Specular
         double D = D_GGX(a2, NoH);
@@ -150,4 +161,26 @@ FColor FCamera::RayColor(const FRay &Ray, const IHittable& World) const
 
     double a = 0.5 * (Ray.Direction.Z + 1.0);
     return (1.0 - a) * FColor(1.0, 1.0, 1.0) + a * FColor(0.5, 0.7, 1.0);
+}
+
+FRay FCamera::GetRay(int PixelX, int PixelY) const
+{
+    FVector Offset = SampleSquare();
+    FVector PixelSample = Pixel00Location +
+        (static_cast<double>(PixelX) + Offset.X) * PixelDeltaU +
+        (static_cast<double>(PixelY) + Offset.Y) * PixelDeltaV;
+
+    FVector RayOrigin = Location;
+    FVector RayDirection = (PixelSample - RayOrigin).GetSafeNormal();
+    
+    return FRay(RayOrigin, RayDirection);
+}
+
+FVector FCamera::SampleSquare() const
+{
+    if (SamplesPerPixel == 1)
+    {
+        return FVector(0.5, 0.5, 0.0);
+    }
+    return FVector(FMath::RandomDouble() - 0.5, FMath::RandomDouble() - 0.5, 0.0);
 }

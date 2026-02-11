@@ -3,14 +3,16 @@
 #include "Vector.h"
 
 #include <iostream>
+#include "Interval.h"
 
 using FColor = FVector;
 
 inline void WriteColor(std::ostream& Out, const FVector& PixelColor)
 {
-    int R = static_cast<int>(255.999 * PixelColor.X);
-    int G = static_cast<int>(255.999 * PixelColor.Y);
-    int B = static_cast<int>(255.999 * PixelColor.Z);
+    static const FInterval Intensity(0.0, 0.999);
+    int R = static_cast<int>(256 * Intensity.Clamp(PixelColor.X));
+    int G = static_cast<int>(256 * Intensity.Clamp(PixelColor.Y));
+    int B = static_cast<int>(256 * Intensity.Clamp(PixelColor.Z));
 
     Out << R << ' ' << G << ' ' << B << '\n';
 }

@@ -17,7 +17,7 @@ bool FSphere::Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHit
         return false;
     }
 
-    double SquaredDiscriminant = Sqrt(Discriminant);
+    double SquaredDiscriminant = FMath::Sqrt(Discriminant);
 
     double HitT = (h - SquaredDiscriminant) / a;
     if (!Interval.Surrounds(HitT))

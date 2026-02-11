@@ -30,6 +30,11 @@ public:
         return Min < X && X < Max;
     }
 
+    double Clamp(double X) const
+    {
+        return FMath::Clamp(X, Min, Max);
+    }
+
     static const FInterval Empty;
     static const FInterval Universe;
 };
