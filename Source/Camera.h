@@ -13,6 +13,7 @@ public:
         , ImageHeight(360)
         , SamplesPerPixel(10)
         , PixelSampleScale(0.1)
+        , MaxDepth(10)
         , Location(FVector::ZeroVector)
         , Direction(FVector::ForwardVector)
         , Pixel00Location(FVector::ZeroVector)
@@ -26,6 +27,7 @@ public:
         , ImageHeight(static_cast<int>(InImageWidth / InAspectRatio))
         , SamplesPerPixel(10)
         , PixelSampleScale(0.1)
+        , MaxDepth(10)
         , Location(FVector::ZeroVector)
         , Direction(FVector::ForwardVector)
         , Pixel00Location(FVector::ZeroVector)
@@ -39,19 +41,21 @@ public:
     int GetImageWidth() const { return ImageWidth; }
     int GetImageHeight() const { return ImageHeight; }
     int GetSamplesPerPixel() const { return SamplesPerPixel; }
+    int GetMaxDepth() const { return MaxDepth; }
     FVector GetLocation() const { return Location; }
     FVector GetDirection() const { return Direction; }
 
     void SetAspectRatio(double InAspectRatio);
     void SetImageWidth(int InImageWidth);
     void SetSamplesPerPixel(int InSamplesPerPixel);
+    void SetMaxDepth(int InMaxDepth) { MaxDepth = InMaxDepth; }
     void SetLocation(const FVector& InLocation);
     void SetDirection(const FVector& InDirection);
 
 private:
     void Initialize();
 
-    FColor RayColor(const FRay& Ray, const IHittable& World) const;
+    FColor RayColor(const FRay& Ray, const IHittable& World, int Depth = 0) const;
 
     FRay GetRay(int PixelX, int PixelY) const;
 
@@ -64,6 +68,7 @@ private:
 
     int SamplesPerPixel;
     double PixelSampleScale;
+    int MaxDepth;
 
     FVector Location;
     FVector Direction;

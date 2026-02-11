@@ -119,47 +119,19 @@ void FCamera::Initialize()
     Pixel00Location = ViewportUpperLeft + 0.5 * (PixelDeltaU + PixelDeltaV);
 }
 
-FColor FCamera::RayColor(const FRay &Ray, const IHittable& World) const
+FColor FCamera::RayColor(const FRay &Ray, const IHittable& World, int Depth) const
 {
+    if (Depth >= MaxDepth)
+    {
+        return FColor(0.0, 0.0, 0.0);
+    }
+
     FHitRecord HitRecord;
     if (World.Hit(Ray, FInterval(0.001, Inf), HitRecord))
     {
-        FVector NewDirection = FMath::RandomUnitVectorOnHemisphere(HitRecord.Normal);
-        return 0.5 * RayColor(FRay(HitRecord.Point, NewDirection), World); // Grey diffuse
-        /*
-        FVector N = HitRecord.Normal.GetSafeNormal();
-        FVector Pos = HitRecord.Point;
-        
-        FVector BaseColor(0.7, 0.7, 0.7);
-        double Roughness = 0.5;
-        double Metallic = 0.0;
-        FVector F0 = FMath::Lerp(FVector(0.04, 0.04, 0.04), BaseColor, Metallic);
-        FVector F90(1.0, 1.0, 1.0);
-
-        FVector V = (-Ray.Direction).GetSafeNormal();
-        FVector H = (L + V).GetSafeNormal();
-
-        double a = Roughness * Roughness;
-        double a2 = a * a;
-        double NoH = FMath::Max(0.0, Dot(N, H));
-        double NoV = FMath::Max(0.0, Dot(N, V));
-        double NoL = FMath::Max(0.0, Dot(N, L));
-        double VoH = FMath::Max(0.0, Dot(V, H));
-
-        // Specular
-        double D = D_GGX(a2, NoH);
-        double Vis = Vis_SmithJoint(a2, NoV, NoL);
-        FVector F = F_Schlick(F0, F90, VoH);
-
-        FVector Specular = D * Vis * F;
-
-        // Diffuse
-        FVector kD = (1.0 - Metallic) * (FVector(1.0, 1.0, 1.0) - F);
-        FVector Diffuse = BaseColor / PI;
-        Diffuse *= kD;
-
-        return (Diffuse + Specular) * LightIntensity * NoL;
-        */
+        // FVector NewDirection = FMath::RandomUnitVectorOnHemisphere(HitRecord.Normal);
+        FVector NewDirection = HitRecord.Normal + FMath::RandomUnitVector();
+        return 0.5 * RayColor(FRay(HitRecord.Point, NewDirection), World, Depth + 1); // Grey diffuse
     }
 
     double a = 0.5 * (Ray.Direction.Z + 1.0);
