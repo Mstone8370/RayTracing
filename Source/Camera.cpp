@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include "Material.h"
+
 FVector LightDirection(-0.7, 0.5, 1.0);
 FVector L = LightDirection.GetSafeNormal();
 double LightIntensity = 4.0;
@@ -129,8 +131,13 @@ FColor FCamera::RayColor(const FRay &Ray, const IHittable& World, int Depth) con
     FHitRecord HitRecord;
     if (World.Hit(Ray, FInterval(0.001, Inf), HitRecord))
     {
-        FVector NewDirection = (HitRecord.Normal + FMath::RandomUnitVector()).GetSafeNormal();
-        return 0.5 * RayColor(FRay(HitRecord.Point, NewDirection), World, Depth + 1); // Grey diffuse
+        FRay ScatteredRay;
+        FVector Attenuation;
+        if (HitRecord.Material && HitRecord.Material->Scatter(Ray, HitRecord, Attenuation, ScatteredRay))
+        {
+            return Attenuation * RayColor(ScatteredRay, World, Depth + 1);
+        }
+        return FColor(0.0, 0.0, 0.0);
     }
 
     double a = 0.5 * (Ray.Direction.Z + 1.0);

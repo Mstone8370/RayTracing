@@ -4,12 +4,15 @@
 #include "Ray.h"
 #include "Interval.h"
 
+class IMaterial;
+
 struct FHitRecord
 {
-    FVector Point = FVector::ZeroVector;
+    FVector HitLocation = FVector::ZeroVector;
     FVector Normal = FVector::ForwardVector;
     double HitT = 0.0;
     bool bFrontFace = false;
+    std::shared_ptr<IMaterial> Material = nullptr;
 
     void SetFaceNormal(const FRay& Ray, const FVector& OutwardNormal)
     {

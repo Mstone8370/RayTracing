@@ -83,6 +83,21 @@ namespace FMath
         }
     }
 
+    inline bool IsNearlyZero(double Value, double Tolerance = 1.e-8)
+    {
+        return std::abs(Value) <= Tolerance;
+    }
+
+    inline bool IsNearlyZero(const FVector& V, double Tolerance = 1.e-8)
+    {
+        return IsNearlyZero(V.X, Tolerance) && IsNearlyZero(V.Y, Tolerance) && IsNearlyZero(V.Z, Tolerance);
+    }
+
+    inline FVector Reflect(const FVector& V, const FVector& Normal)
+    {
+        return V - 2.0 * Dot(V, Normal) * Normal;
+    }
+
     template<typename T>
     inline T Max(const T& A, const T& B)
     {
