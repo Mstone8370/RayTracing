@@ -25,10 +25,10 @@ protected:
 };
 
 
-class MLambertian : public IMaterial
+class FLambertian : public IMaterial
 {
 public:
-    MLambertian(const FVector& InAlbedo)
+    FLambertian(const FVector& InAlbedo)
         : IMaterial(InAlbedo)
     {}
 
@@ -50,10 +50,10 @@ public:
 };
 
 
-class MMetal : public IMaterial
+class FMetal : public IMaterial
 {
 public:
-    MMetal(const FVector& InAlbedo, double InFuzziness = 0.0)
+    FMetal(const FVector& InAlbedo, double InFuzziness = 0.0)
         : IMaterial(InAlbedo)
         , Fuzziness(FMath::Clamp(InFuzziness, 0.0, 1.0))
     {}
@@ -71,4 +71,42 @@ public:
 
 protected:
     double Fuzziness;
+};
+
+class FDielectric : public IMaterial
+{
+public:
+    FDielectric(double InRefrationIndex)
+        : IMaterial(FVector(1.0, 1.0, 1.0))
+        , RefrationIndex(InRefrationIndex)
+    {}
+
+    virtual bool Scatter(const FRay& InRay, const FHitRecord& HitRecord, FVector& OutAttenuation, FRay& OutScatteredRay) const override
+    {
+        OutAttenuation = Albedo;
+        double EtaRatio = HitRecord.bFrontFace ? (1.0 / RefrationIndex) : RefrationIndex;
+
+        FVector UnitDirection = InRay.Direction.GetSafeNormal();
+
+        double CosTheta = FMath::Min(Dot(-UnitDirection, HitRecord.Normal), 1.0);
+        double SinTheta = FMath::Sqrt(1.0 - CosTheta * CosTheta);
+
+        bool bCannotRefract = EtaRatio * SinTheta > 1.0;
+        FVector Direction;
+        if (bCannotRefract)
+        {
+            Direction = FMath::Reflect(UnitDirection, HitRecord.Normal);
+        }
+        else
+        {
+            Direction = FMath::Refract(UnitDirection, HitRecord.Normal, EtaRatio);
+        }
+
+        OutScatteredRay = FRay(HitRecord.HitLocation, Direction);
+        
+        return true;
+    }
+
+protected:
+    double RefrationIndex;
 };

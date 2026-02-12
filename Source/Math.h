@@ -93,9 +93,9 @@ namespace FMath
         return IsNearlyZero(V.X, Tolerance) && IsNearlyZero(V.Y, Tolerance) && IsNearlyZero(V.Z, Tolerance);
     }
 
-    inline FVector Reflect(const FVector& V, const FVector& Normal)
+    inline double Abs(double Value)
     {
-        return V - 2.0 * Dot(V, Normal) * Normal;
+        return std::abs(Value);
     }
 
     template<typename T>
@@ -128,5 +128,18 @@ namespace FMath
     inline T Lerp(const T& A, const T& B, double R)
     {
         return A + (B - A) * R;
+    }
+
+    inline FVector Reflect(const FVector& V, const FVector& Normal)
+    {
+        return V - 2.0 * Dot(V, Normal) * Normal;
+    }
+
+    inline FVector Refract(const FVector& V, const FVector& Normal, double EtaRatio)
+    {
+        double CosTheta = FMath::Min(Dot(-V, Normal), 1.0);
+        FVector Perpendicular = EtaRatio * (V + CosTheta * Normal);
+        FVector Parallel = -FMath::Sqrt(FMath::Abs(1.0 - Perpendicular.LengthSquared())) * Normal;
+        return Perpendicular + Parallel;
     }
 }
