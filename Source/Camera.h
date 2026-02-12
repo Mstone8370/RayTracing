@@ -9,13 +9,14 @@ class FCamera
 public:
     FCamera()
         : AspectRatio(16.0 / 9.0)
+        , VerticalFov(90.0)
         , ImageWidth(640)
         , ImageHeight(360)
         , SamplesPerPixel(10)
         , PixelSampleScale(0.1)
         , MaxDepth(10)
         , Location(FVector::ZeroVector)
-        , Direction(FVector::ForwardVector)
+        , LookAt(FVector::ForwardVector)
         , Pixel00Location(FVector::ZeroVector)
         , PixelDeltaU(FVector::ZeroVector)
         , PixelDeltaV(FVector::ZeroVector)
@@ -23,13 +24,14 @@ public:
 
     FCamera(double InAspectRatio, int InImageWidth)
         : AspectRatio(InAspectRatio)
+        , VerticalFov(90.0)
         , ImageWidth(InImageWidth)
         , ImageHeight(static_cast<int>(InImageWidth / InAspectRatio))
         , SamplesPerPixel(10)
         , PixelSampleScale(0.1)
         , MaxDepth(10)
         , Location(FVector::ZeroVector)
-        , Direction(FVector::ForwardVector)
+        , LookAt(FVector::ForwardVector)
         , Pixel00Location(FVector::ZeroVector)
         , PixelDeltaU(FVector::ZeroVector)
         , PixelDeltaV(FVector::ZeroVector)
@@ -38,19 +40,21 @@ public:
     void Render(const IHittable& World);
 
     double GetAspectRatio() const { return AspectRatio; }
+    double GetVerticalFov() const { return VerticalFov; }
     int GetImageWidth() const { return ImageWidth; }
     int GetImageHeight() const { return ImageHeight; }
     int GetSamplesPerPixel() const { return SamplesPerPixel; }
     int GetMaxDepth() const { return MaxDepth; }
     FVector GetLocation() const { return Location; }
-    FVector GetDirection() const { return Direction; }
+    FVector GetLookAt() const { return LookAt; }
 
     void SetAspectRatio(double InAspectRatio);
+    void SetVerticalFov(double InVerticalFov);
     void SetImageWidth(int InImageWidth);
     void SetSamplesPerPixel(int InSamplesPerPixel);
     void SetMaxDepth(int InMaxDepth) { MaxDepth = InMaxDepth; }
     void SetLocation(const FVector& InLocation);
-    void SetDirection(const FVector& InDirection);
+    void SetLookAt(const FVector& InLookAt);
 
 private:
     void Initialize();
@@ -62,6 +66,8 @@ private:
     FVector SampleSquare() const;
     
     double AspectRatio;
+
+    double VerticalFov;
     
     int ImageWidth;
     int ImageHeight;
@@ -71,7 +77,7 @@ private:
     int MaxDepth;
 
     FVector Location;
-    FVector Direction;
+    FVector LookAt;
 
     FVector Pixel00Location;
     FVector PixelDeltaU;

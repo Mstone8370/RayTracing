@@ -59,6 +59,16 @@ void FCamera::SetAspectRatio(double InAspectRatio)
     }
 }
 
+void FCamera::SetVerticalFov(double InVerticalFov)
+{
+    if (InVerticalFov > 0.0 && InVerticalFov < 180.0)
+    {
+        VerticalFov = InVerticalFov;
+
+        Initialize();
+    }
+}
+
 void FCamera::SetImageWidth(int InImageWitdh)
 {
     if (InImageWitdh > 0)
@@ -86,9 +96,9 @@ void FCamera::SetLocation(const FVector &InLocation)
     Initialize();
 }
 
-void FCamera::SetDirection(const FVector &InDirection)
+void FCamera::SetLookAt(const FVector &InLookAt)
 {
-    Direction = InDirection;
+    LookAt = InLookAt;
 
     Initialize();
 }
@@ -100,24 +110,28 @@ void FCamera::Initialize()
 
     PixelSampleScale = 1.0 / static_cast<double>(SamplesPerPixel);
 
-    Location = FVector::ZeroVector;
-    Direction = FVector::ForwardVector;
-
     // Determine viewport dimensions.
-    double FocalLength = 1.0;
-    double ViewportHeight = 2.0;
+    double FocalLength = (LookAt - Location).Length();
+    double Theta = FMath::DegreesToRadians(VerticalFov);
+    double HalfHeight = std::tan(Theta / 2.0);
+    double ViewportHeight = 2.0 * HalfHeight * FocalLength;
     double ViewportWidth = ViewportHeight * (static_cast<double>(ImageWidth) / static_cast<double>(ImageHeight));
 
+    // Calculate the basis vectors for camera.
+    FVector Forward = (LookAt - Location).GetSafeNormal();
+    FVector Right = Cross(FVector::UpVector, Forward).GetSafeNormal();
+    FVector Up = Cross(Forward, Right);
+
     // Calculate the vectors across the horizontal and down the vertical viewport edges.
-    FVector ViewportU = FVector(0.0, ViewportWidth, 0.0);
-    FVector ViewportV = FVector(0.0, 0.0, -ViewportHeight);
+    FVector ViewportU = ViewportWidth * Right;
+    FVector ViewportV = ViewportHeight * -Up;
 
     // Calculate the horizontal and vertical delta vectors from pixel to pixel.
     PixelDeltaU = ViewportU / ImageWidth;
     PixelDeltaV = ViewportV / ImageHeight;
-
+    
     // Calculate the location of the upper left pixel.
-    FVector ViewportUpperLeft = Location + FocalLength * Direction - ViewportU * 0.5 - ViewportV * 0.5;
+    FVector ViewportUpperLeft = Location + FocalLength * Forward - ViewportU * 0.5 - ViewportV * 0.5;
     Pixel00Location = ViewportUpperLeft + 0.5 * (PixelDeltaU + PixelDeltaV);
 }
 

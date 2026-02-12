@@ -28,8 +28,11 @@ int main()
     World.Add(std::make_shared<FSphere>(FVector(1.0, 1.0, 0.0), 0.5, RightMaterial));
 
     FCamera Camera(16.0 / 9.0, 640);
-    Camera.SetSamplesPerPixel(50);
+    Camera.SetSamplesPerPixel(100);
     Camera.SetMaxDepth(50);
+    Camera.SetVerticalFov(20.0); // (Horizontal FOV: 110) == (Vertical FOV: 78) at 16:9 aspect ratio
+    Camera.SetLocation(FVector(-1.0, -2.0, 2.0));
+    Camera.SetLookAt(FVector(1.0, 0.0, 0.0));
 
     Camera.Render(World);
 }
