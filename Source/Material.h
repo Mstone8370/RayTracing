@@ -93,7 +93,7 @@ public:
 
         bool bCannotRefract = EtaRatio * SinTheta > 1.0;
         FVector Direction;
-        if (bCannotRefract)
+        if (bCannotRefract || Reflectance(CosTheta, EtaRatio) > FMath::RandomDouble())
         {
             Direction = FMath::Reflect(UnitDirection, HitRecord.Normal);
         }
@@ -109,4 +109,11 @@ public:
 
 protected:
     double RefrationIndex;
+
+    static double Reflectance(double Cosine, double RefrationIdex)
+    {
+        double R0 = (1 - RefrationIdex) / (1 + RefrationIdex);
+        R0 = R0 * R0;
+        return R0 + (1 - R0) * FMath::Pow5(1 - Cosine);
+    }
 };
