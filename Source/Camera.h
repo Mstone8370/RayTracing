@@ -15,6 +15,8 @@ public:
         , SamplesPerPixel(10)
         , PixelSampleScale(0.1)
         , MaxDepth(10)
+        , DefocusAngle(0.0)
+        , FocusDistance(10.0)
         , Location(FVector::ZeroVector)
         , LookAt(FVector::ForwardVector)
         , Pixel00Location(FVector::ZeroVector)
@@ -30,6 +32,8 @@ public:
         , SamplesPerPixel(10)
         , PixelSampleScale(0.1)
         , MaxDepth(10)
+        , DefocusAngle(0.0)
+        , FocusDistance(10.0)
         , Location(FVector::ZeroVector)
         , LookAt(FVector::ForwardVector)
         , Pixel00Location(FVector::ZeroVector)
@@ -45,6 +49,8 @@ public:
     int GetImageHeight() const { return ImageHeight; }
     int GetSamplesPerPixel() const { return SamplesPerPixel; }
     int GetMaxDepth() const { return MaxDepth; }
+    double GetDefocusAngle() const { return DefocusAngle; }
+    double GetFocusDistance() const { return FocusDistance; }
     FVector GetLocation() const { return Location; }
     FVector GetLookAt() const { return LookAt; }
 
@@ -53,6 +59,8 @@ public:
     void SetImageWidth(int InImageWidth);
     void SetSamplesPerPixel(int InSamplesPerPixel);
     void SetMaxDepth(int InMaxDepth) { MaxDepth = InMaxDepth; }
+    void SetDefocusAngle(double InDefocusAngle);
+    void SetFocusDistance(double InFocusDistance);
     void SetLocation(const FVector& InLocation);
     void SetLookAt(const FVector& InLookAt);
 
@@ -62,6 +70,8 @@ private:
     FColor RayColor(const FRay& Ray, const IHittable& World, int Depth = 0) const;
 
     FRay GetRay(int PixelX, int PixelY) const;
+
+    FVector DefocusDistSample() const;
 
     FVector SampleSquare() const;
     
@@ -76,10 +86,16 @@ private:
     double PixelSampleScale;
     int MaxDepth;
 
+    double DefocusAngle;
+    double FocusDistance;
+
     FVector Location;
     FVector LookAt;
 
     FVector Pixel00Location;
     FVector PixelDeltaU;
     FVector PixelDeltaV;
+
+    FVector DefocusDiskU;
+    FVector DefocusDiskV;
 };

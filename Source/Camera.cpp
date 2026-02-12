@@ -89,6 +89,20 @@ void FCamera::SetSamplesPerPixel(int InSamplesPerPixel)
     }
 }
 
+void FCamera::SetDefocusAngle(double InDefocusAngle)
+{
+    DefocusAngle = InDefocusAngle;
+
+    Initialize();
+}
+
+void FCamera::SetFocusDistance(double InFocusDistance)
+{
+    FocusDistance = InFocusDistance;
+
+    Initialize();
+}
+
 void FCamera::SetLocation(const FVector &InLocation)
 {
     Location = InLocation;
@@ -111,10 +125,9 @@ void FCamera::Initialize()
     PixelSampleScale = 1.0 / static_cast<double>(SamplesPerPixel);
 
     // Determine viewport dimensions.
-    double FocalLength = (LookAt - Location).Length();
     double Theta = FMath::DegreesToRadians(VerticalFov);
     double HalfHeight = std::tan(Theta / 2.0);
-    double ViewportHeight = 2.0 * HalfHeight * FocalLength;
+    double ViewportHeight = 2.0 * HalfHeight * FocusDistance;
     double ViewportWidth = ViewportHeight * (static_cast<double>(ImageWidth) / static_cast<double>(ImageHeight));
 
     // Calculate the basis vectors for camera.
@@ -131,8 +144,13 @@ void FCamera::Initialize()
     PixelDeltaV = ViewportV / ImageHeight;
     
     // Calculate the location of the upper left pixel.
-    FVector ViewportUpperLeft = Location + FocalLength * Forward - ViewportU * 0.5 - ViewportV * 0.5;
+    FVector ViewportUpperLeft = Location + FocusDistance * Forward - ViewportU * 0.5 - ViewportV * 0.5;
     Pixel00Location = ViewportUpperLeft + 0.5 * (PixelDeltaU + PixelDeltaV);
+
+    // Calculate the camera defocus disk basis vectors.
+    double DefocusRadius = FocusDistance * std::tan(FMath::DegreesToRadians(DefocusAngle * 0.5));
+    DefocusDiskU = DefocusRadius * Right;
+    DefocusDiskV = DefocusRadius * Up;
 }
 
 FColor FCamera::RayColor(const FRay &Ray, const IHittable& World, int Depth) const
@@ -165,10 +183,16 @@ FRay FCamera::GetRay(int PixelX, int PixelY) const
         (static_cast<double>(PixelX) + Offset.X) * PixelDeltaU +
         (static_cast<double>(PixelY) + Offset.Y) * PixelDeltaV;
 
-    FVector RayOrigin = Location;
+    FVector RayOrigin = (DefocusAngle <= 0.0) ? Location : DefocusDistSample();
     FVector RayDirection = (PixelSample - RayOrigin).GetSafeNormal();
     
     return FRay(RayOrigin, RayDirection);
+}
+
+FVector FCamera::DefocusDistSample() const
+{
+    FVector P = FMath::RandomInUnitDisk();
+    return Location + P.X * DefocusDiskU + P.Y * DefocusDiskV;
 }
 
 FVector FCamera::SampleSquare() const

@@ -28,6 +28,7 @@ struct FMath
     static FVector RandomVector(double Min, double Max);
     static FVector RandomUnitVector();
     static FVector RandomUnitVectorOnHemisphere(const FVector& Normal);
+    static FVector RandomInUnitDisk();
 
     // Comparison and utility
     static bool IsNearlyZero(double Value, double Tolerance = 1.e-8);

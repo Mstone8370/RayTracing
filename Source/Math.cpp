@@ -73,6 +73,18 @@ FVector FMath::RandomUnitVectorOnHemisphere(const FVector& Normal)
     }
 }
 
+FVector FMath::RandomInUnitDisk()
+{
+    while (true)
+    {
+        const FVector P = FVector(RandomDouble(-1.0, 1.0), RandomDouble(-1.0, 1.0), 0.0);
+        if (P.LengthSquared() < 1.0)
+        {
+            return P;
+        }
+    }
+}
+
 bool FMath::IsNearlyZero(double Value, double Tolerance)
 {
     return std::abs(Value) <= Tolerance;
