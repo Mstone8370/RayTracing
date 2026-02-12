@@ -15,6 +15,7 @@ add_executable(RayTracing
     Source/Sphere.cpp
     Source/Interval.cpp
     Source/Camera.cpp
+    Source/Math.cpp
 )
 
 # 컴파일러별 경고 설정

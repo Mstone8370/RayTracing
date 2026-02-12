@@ -8,110 +8,47 @@
 constexpr double Inf = std::numeric_limits<double>::infinity();
 constexpr double PI = 3.1415926535897932385;
 
-namespace FMath
+struct FMath
 {
-    inline double DegreesToRadians(double Degrees)
-    {
-        return Degrees * PI / 180.0;
-    }
+    // Angle conversion
+    static double DegreesToRadians(double Degrees);
+    static double RadiansToDegrees(double Radians);
 
-    inline double RadiansToDegrees(double Radians)
-    {
-        return Radians * 180.0 / PI;
-    }
+    // Power and square root
+    static double Pow(double Base, double Exponent);
+    static double Pow5(double X);
+    static double Sqrt(double X);
 
-    inline double Pow(double Base, double Exponent)
-    {
-        return std::pow(Base, Exponent);
-    }
+    // Random number generation
+    static double RandomDouble();
+    static double RandomDouble(double Min, double Max);
 
-    inline double Pow5(double X)
-    {
-        return X * X * X * X * X;
-    }
+    // Random vector generation
+    static FVector RandomVector();
+    static FVector RandomVector(double Min, double Max);
+    static FVector RandomUnitVector();
+    static FVector RandomUnitVectorOnHemisphere(const FVector& Normal);
 
-    inline double Sqrt(double X)
-    {
-        return std::sqrt(X);
-    }
+    // Comparison and utility
+    static bool IsNearlyZero(double Value, double Tolerance = 1.e-8);
+    static bool IsNearlyZero(const FVector& V, double Tolerance = 1.e-8);
+    static double Abs(double Value);
 
-    inline double RandomDouble()
-    {
-        static std::uniform_real_distribution<double> Distribution(0.0, 1.0);
-        static std::mt19937 Generator;
-        return Distribution(Generator);
-    }
-
-    inline double RandomDouble(double Min, double Max)
-    {
-        return Min + (Max - Min) * RandomDouble();
-    }
-
-    inline FVector RandomVector()
-    {
-        return FVector(RandomDouble(), RandomDouble(), RandomDouble());
-    }
-
-    inline FVector RandomVector(double Min, double Max)
-    {
-        return FVector(RandomDouble(Min, Max), RandomDouble(Min, Max), RandomDouble(Min, Max));
-    }
-
-    inline FVector RandomUnitVector()
-    {
-        while (true)
-        {
-            const FVector V = RandomVector(-1.0, 1.0);
-            const double SquaredLength = V.LengthSquared();
-            if (1e-16 < SquaredLength && SquaredLength <= 1.0)
-            {
-                return V.GetSafeNormal();
-            }
-        }
-    }
-
-    inline FVector RandomUnitVectorOnHemisphere(const FVector& Normal)
-    {
-        const FVector OnUnitSphere = RandomUnitVector();
-        if (Dot(OnUnitSphere, Normal) > 0.0)
-        {
-            return OnUnitSphere;
-        }
-        else
-        {
-            return -OnUnitSphere;
-        }
-    }
-
-    inline bool IsNearlyZero(double Value, double Tolerance = 1.e-8)
-    {
-        return std::abs(Value) <= Tolerance;
-    }
-
-    inline bool IsNearlyZero(const FVector& V, double Tolerance = 1.e-8)
-    {
-        return IsNearlyZero(V.X, Tolerance) && IsNearlyZero(V.Y, Tolerance) && IsNearlyZero(V.Z, Tolerance);
-    }
-
-    inline double Abs(double Value)
-    {
-        return std::abs(Value);
-    }
-
+    // Template functions (must be defined in header)
     template<typename T>
-    inline T Max(const T& A, const T& B)
+    static T Max(const T& A, const T& B)
     {
         return (A > B) ? A : B;
     }
 
     template<typename T>
-    inline T Min(const T& A, const T& B)
+    static T Min(const T& A, const T& B)
     {
         return (A < B) ? A : B;
     }
 
     template<typename T>
-    inline T Clamp(const T& Value, const T& MinValue, const T& MaxValue)
+    static T Clamp(const T& Value, const T& MinValue, const T& MaxValue)
     {
         if (Value < MinValue)
         {
@@ -125,21 +62,12 @@ namespace FMath
     }
 
     template<typename T>
-    inline T Lerp(const T& A, const T& B, double R)
+    static T Lerp(const T& A, const T& B, double R)
     {
         return A + (B - A) * R;
     }
 
-    inline FVector Reflect(const FVector& V, const FVector& Normal)
-    {
-        return V - 2.0 * Dot(V, Normal) * Normal;
-    }
-
-    inline FVector Refract(const FVector& V, const FVector& Normal, double EtaRatio)
-    {
-        double CosTheta = FMath::Min(Dot(-V, Normal), 1.0);
-        FVector Perpendicular = EtaRatio * (V + CosTheta * Normal);
-        FVector Parallel = -FMath::Sqrt(FMath::Abs(1.0 - Perpendicular.LengthSquared())) * Normal;
-        return Perpendicular + Parallel;
-    }
-}
+    // Vector operations
+    static FVector Reflect(const FVector& V, const FVector& Normal);
+    static FVector Refract(const FVector& V, const FVector& Normal, double EtaRatio);
+};
