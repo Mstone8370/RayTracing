@@ -42,7 +42,7 @@ public:
             ScatterDirection = HitRecord.Normal;
         }
         
-        OutScatteredRay = FRay(HitRecord.HitLocation, ScatterDirection.GetSafeNormal());
+        OutScatteredRay = FRay(HitRecord.HitLocation, ScatterDirection.GetSafeNormal(), InRay.Time);
         OutAttenuation = Albedo;
         
         return true;
@@ -63,7 +63,7 @@ public:
         FVector ReflectedDirection = FMath::Reflect(InRay.Direction, HitRecord.Normal);
         ReflectedDirection += Fuzziness * FMath::RandomUnitVector();
         
-        OutScatteredRay = FRay(HitRecord.HitLocation, ReflectedDirection.GetSafeNormal());
+        OutScatteredRay = FRay(HitRecord.HitLocation, ReflectedDirection.GetSafeNormal(), InRay.Time);
         OutAttenuation = Albedo;
         
         return Dot(OutScatteredRay.Direction, HitRecord.Normal) > 0.0;
@@ -102,7 +102,7 @@ public:
             Direction = FMath::Refract(UnitDirection, HitRecord.Normal, EtaRatio);
         }
 
-        OutScatteredRay = FRay(HitRecord.HitLocation, Direction);
+        OutScatteredRay = FRay(HitRecord.HitLocation, Direction, InRay.Time);
         
         return true;
     }

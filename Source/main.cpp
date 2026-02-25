@@ -32,7 +32,8 @@ int main()
                     // Diffuse
                     FVector Albedo = FMath::RandomVector() * FMath::RandomVector();
                     std::shared_ptr<IMaterial> SphereMaterial = std::make_shared<FLambertian>(Albedo);
-                    World.Add(std::make_shared<FSphere>(Location, 0.2, SphereMaterial));
+                    FVector EndLocation = Location + FVector(0.0, 0.0, FMath::RandomDouble(0.0, 0.5));
+                    World.Add(std::make_shared<FSphere>(Location, EndLocation, 0.2, SphereMaterial));
                 }
                 else if (RandomMaterial < 0.95)
                 {
@@ -61,8 +62,8 @@ int main()
     std::shared_ptr<IMaterial> Material3 = std::make_shared<FMetal>(FVector(0.7, 0.6, 0.5), 0.0);
     World.Add(std::make_shared<FSphere>(FVector(0.0, 4.0, 1.0), 1.0, Material3));
 
-    FCamera Camera(16.0 / 9.0, 1200);
-    Camera.SetSamplesPerPixel(500);
+    FCamera Camera(16.0 / 9.0, 400);
+    Camera.SetSamplesPerPixel(100);
     Camera.SetMaxDepth(50);
     Camera.SetVerticalFov(20.0); // (Horizontal FOV: 110) == (Vertical FOV: 78) at 16:9 aspect ratio
     Camera.SetLocation(FVector(-3.0, 13.0, 2.0));

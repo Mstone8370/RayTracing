@@ -185,8 +185,9 @@ FRay FCamera::GetRay(int PixelX, int PixelY) const
 
     FVector RayOrigin = (DefocusAngle <= 0.0) ? Location : DefocusDistSample();
     FVector RayDirection = (PixelSample - RayOrigin).GetSafeNormal();
+    double RayTime = FMath::RandomDouble();
     
-    return FRay(RayOrigin, RayDirection);
+    return FRay(RayOrigin, RayDirection, RayTime);
 }
 
 FVector FCamera::DefocusDistSample() const

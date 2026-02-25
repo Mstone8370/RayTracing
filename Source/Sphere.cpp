@@ -5,7 +5,8 @@
 
 bool FSphere::Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const
 {
-    FVector ToSphere = Location - Ray.Origin;
+    const FVector CurrentLocation = GetLocation(Ray.Time);
+    const FVector ToSphere = CurrentLocation - Ray.Origin;
 
     double a = Ray.Direction.LengthSquared();
     double h = Dot(Ray.Direction, ToSphere);
@@ -31,9 +32,18 @@ bool FSphere::Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHit
 
     OutHitRecord.HitT = HitT;
     OutHitRecord.HitLocation = Ray.At(HitT);
-    FVector OutwardNormal = (OutHitRecord.HitLocation - Location) / Radius;
+    const FVector OutwardNormal = (OutHitRecord.HitLocation - CurrentLocation) / Radius;
     OutHitRecord.SetFaceNormal(Ray, OutwardNormal);
     OutHitRecord.Material = Material;
 
     return true;
 }
+
+FVector FSphere::GetLocation(double Time) const
+{
+    if (bIsMoving)
+    {
+        return FVector::Lerp(StartLocation, EndLocation, Time);
+    }
+    return StartLocation;
+}   
