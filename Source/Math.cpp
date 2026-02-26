@@ -37,6 +37,11 @@ double FMath::RandomDouble(double Min, double Max)
     return Min + (Max - Min) * RandomDouble();
 }
 
+int FMath::RandomInt(int Min, int Max)
+{
+    return static_cast<int>(RandomDouble(Min, Max + 1));
+}
+
 FVector FMath::RandomVector()
 {
     return FVector(RandomDouble(), RandomDouble(), RandomDouble());

@@ -5,6 +5,7 @@
 #include "Ray.h"
 #include "Hittable.h"
 #include "HittableList.h"
+#include "BVH.h"
 #include "Sphere.h"
 #include "Interval.h"
 #include "Camera.h"
@@ -62,7 +63,9 @@ int main()
     std::shared_ptr<IMaterial> Material3 = std::make_shared<FMetal>(FVector(0.7, 0.6, 0.5), 0.0);
     World.Add(std::make_shared<FSphere>(FVector(0.0, 4.0, 1.0), 1.0, Material3));
 
-    FCamera Camera(16.0 / 9.0, 400);
+    World = FHittableList(std::make_shared<FBVHNode>(World));
+
+    FCamera Camera(16.0 / 9.0, 600);
     Camera.SetSamplesPerPixel(100);
     Camera.SetMaxDepth(50);
     Camera.SetVerticalFov(20.0); // (Horizontal FOV: 110) == (Vertical FOV: 78) at 16:9 aspect ratio

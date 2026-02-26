@@ -23,6 +23,8 @@ struct FMath
     static double RandomDouble();
     static double RandomDouble(double Min, double Max);
 
+    static int RandomInt(int Min, int Max);
+
     // Random vector generation
     static FVector RandomVector();
     static FVector RandomVector(double Min, double Max);

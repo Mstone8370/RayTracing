@@ -92,4 +92,19 @@ public:
 
         return true;
     }
+
+    int LongestAxis() const
+    {
+        if (X.Size() > Y.Size())
+        {
+            return (X.Size() > Z.Size()) ? 0 : 2;
+        }
+        else
+        {
+            return (Y.Size() > Z.Size()) ? 1 : 2;
+        }
+    }
+
+    static const FAABB Empty;
+    static const FAABB Universe;
 };
