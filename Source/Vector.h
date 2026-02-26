@@ -19,6 +19,19 @@ public:
     constexpr FVector() : X(0.0) , Y(0.0) , Z(0.0) {}
     constexpr FVector(double InX, double InY, double InZ) : X(InX), Y(InY), Z(InZ) {}
 
+    double operator[](int Axis) const
+    {
+        if (Axis == 1)
+        {
+            return Y;
+        }
+        if (Axis == 2)
+        {
+            return Z;
+        }
+        return X;
+    }
+
     // Unary operators
     FVector operator-() const { return FVector(-X, -Y, -Z); }
 
