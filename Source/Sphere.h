@@ -14,7 +14,10 @@ public:
         , bIsMoving(false)
         , Radius(FMath::Max(0.0, InRadius))
         , Material(InMaterial)
-    {}
+    {
+        const FVector Extent = FVector(Radius, Radius, Radius);
+        BBox = FAABB(StartLocation - Extent, StartLocation + Extent);
+    }
 
     FSphere(const FVector& InStartLocation, const FVector& InEndLocation, double InRadius, std::shared_ptr<IMaterial> InMaterial)
         : StartLocation(InStartLocation)
@@ -22,9 +25,16 @@ public:
         , bIsMoving(true)
         , Radius(FMath::Max(0.0, InRadius))
         , Material(InMaterial)
-    {}
+    {
+        const FVector Extent = FVector(Radius, Radius, Radius);
+        FAABB Box1(StartLocation - Extent, StartLocation + Extent);
+        FAABB Box2(EndLocation - Extent, EndLocation + Extent);
+        BBox = FAABB(Box1, Box2);
+    }
 
     virtual bool Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const override;
+
+    virtual FAABB BoundingBox() const override { return BBox; }
 
     FVector GetLocation(double Time = 0.0) const;
     double GetRadius() const { return Radius; }
@@ -34,6 +44,7 @@ protected:
     FVector EndLocation;
     bool bIsMoving;
     double Radius;
+    FAABB BBox;
     
     std::shared_ptr<IMaterial> Material;
 };

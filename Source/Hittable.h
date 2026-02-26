@@ -3,6 +3,7 @@
 #include "Vector.h"
 #include "Ray.h"
 #include "Interval.h"
+#include "AABB.h"
 
 class IMaterial;
 
@@ -27,4 +28,6 @@ public:
     virtual ~IHittable() = default;
     
     virtual bool Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const = 0;
+
+    virtual FAABB BoundingBox() const = 0; // Empty Bounding Box
 };

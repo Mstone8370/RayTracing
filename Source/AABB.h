@@ -2,6 +2,7 @@
 
 #include "Interval.h"
 #include "Ray.h"
+#include "Math.h"
 
 class FAABB
 {
@@ -23,9 +24,15 @@ public:
     {}
 
     FAABB(const FVector& A, const FVector& B)
-        : X(std::min(A.X, B.X), std::max(A.X, B.X))
-        , Y(std::min(A.Y, B.Y), std::max(A.Y, B.Y))
-        , Z(std::min(A.Z, B.Z), std::max(A.Z, B.Z))
+        : X(FMath::Min(A.X, B.X), FMath::Max(A.X, B.X))
+        , Y(FMath::Min(A.Y, B.Y), FMath::Max(A.Y, B.Y))
+        , Z(FMath::Min(A.Z, B.Z), FMath::Max(A.Z, B.Z))
+    {}
+
+    FAABB(const FAABB& Box1, const FAABB& Box2)
+        : X(FInterval(Box1.X, Box2.X))
+        , Y(FInterval(Box1.Y, Box2.Y))
+        , Z(FInterval(Box1.Z, Box2.Z))
     {}
 
     const FInterval& AxisInterval(int Axis) const
