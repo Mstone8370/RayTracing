@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Interval.h"
+#include "AABB.h"
 
 class FHittableList : public IHittable
 {
@@ -28,7 +29,7 @@ public:
         Objects.clear();
     }
 
-    bool Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const override
+    virtual bool Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHitRecord) const override
     {
         FHitRecord TempRecord;
         bool bHit = false;
@@ -46,4 +47,12 @@ public:
 
         return bHit;
     }
+
+    virtual FAABB BoundingBox() const override
+    {
+        return BBox;
+    }
+
+protected:
+    FAABB BBox;
 };
