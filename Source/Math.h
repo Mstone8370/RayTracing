@@ -37,6 +37,14 @@ struct FMath
     static bool IsNearlyZero(const FVector& V, double Tolerance = 1.e-8);
     static double Abs(double Value);
 
+    static double Floor(double Value);
+    static double Round(double Value);
+    static double Ceil(double Value);
+    static int FloorToInt(double Value);
+    static int RountToInt(double Value);
+    static int CeilToInt(double Value);
+
+
     // Template functions (must be defined in header)
     template<typename T>
     static T Max(const T& A, const T& B)

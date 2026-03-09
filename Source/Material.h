@@ -4,16 +4,17 @@
 #include "Ray.h"
 #include "Vector.h"
 #include "Math.h"
+#include "Texture.h"
 
 class IMaterial
 {
 public:
-    IMaterial()
-        : Albedo(FVector(0.5, 0.5, 0.5))
+    IMaterial(const FVector& InAlbedo)
+        : Texture(std::make_shared<FSolidColor>(InAlbedo))
     {}
 
-    IMaterial(const FVector& InAlbedo)
-        : Albedo(InAlbedo)
+    IMaterial(const std::shared_ptr<ITexture>& InTexture)
+        : Texture(InTexture)
     {}
 
     virtual ~IMaterial() = default;
@@ -21,7 +22,7 @@ public:
     virtual bool Scatter(const FRay& InRay, const FHitRecord& HitRecord, FVector& OutAttenuation, FRay& OutScatteredRay) const = 0;
     
 protected:
-    FVector Albedo;
+    std::shared_ptr<ITexture> Texture;
 };
 
 
@@ -30,6 +31,10 @@ class FLambertian : public IMaterial
 public:
     FLambertian(const FVector& InAlbedo)
         : IMaterial(InAlbedo)
+    {}
+
+    FLambertian(const std::shared_ptr<ITexture>& InTexture)
+        : IMaterial(InTexture)
     {}
 
     virtual bool Scatter(const FRay& InRay, const FHitRecord& HitRecord, FVector& OutAttenuation, FRay& OutScatteredRay) const override
@@ -43,7 +48,7 @@ public:
         }
         
         OutScatteredRay = FRay(HitRecord.HitLocation, ScatterDirection.GetSafeNormal(), InRay.Time);
-        OutAttenuation = Albedo;
+        OutAttenuation = Texture->Value(HitRecord.U, HitRecord.V, HitRecord.HitLocation);
         
         return true;
     }
@@ -64,7 +69,7 @@ public:
         ReflectedDirection += Fuzziness * FMath::RandomUnitVector();
         
         OutScatteredRay = FRay(HitRecord.HitLocation, ReflectedDirection.GetSafeNormal(), InRay.Time);
-        OutAttenuation = Albedo;
+        OutAttenuation = Texture->Value(HitRecord.U, HitRecord.V, HitRecord.HitLocation);
         
         return Dot(OutScatteredRay.Direction, HitRecord.Normal) > 0.0;
     }
@@ -83,7 +88,7 @@ public:
 
     virtual bool Scatter(const FRay& InRay, const FHitRecord& HitRecord, FVector& OutAttenuation, FRay& OutScatteredRay) const override
     {
-        OutAttenuation = Albedo;
+        OutAttenuation = Texture->Value(HitRecord.U, HitRecord.V, HitRecord.HitLocation);
         double EtaRatio = HitRecord.bFrontFace ? (1.0 / RefrationIndex) : RefrationIndex;
 
         FVector UnitDirection = InRay.Direction.GetSafeNormal();

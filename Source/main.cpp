@@ -10,13 +10,15 @@
 #include "Interval.h"
 #include "Camera.h"
 #include "Material.h"
+#include "Texture.h"
 
 #include <iostream>
 
 int main()
 {
     FHittableList World;
-    std::shared_ptr<IMaterial> GroundMaterial = std::make_shared<FLambertian>(FVector(0.5, 0.5, 0.5));
+    std::shared_ptr<FCheckerTexture> CheckerTexture = std::make_shared<FCheckerTexture>(0.32, FColor(0.2, 0.3, 0.1), FColor(0.9, 0.9, 0.9));
+    std::shared_ptr<IMaterial> GroundMaterial = std::make_shared<FLambertian>(CheckerTexture);
     World.Add(std::make_shared<FSphere>(FVector(0.0, 0.0, -1000.), 1000.0, GroundMaterial));
 
     for (int i = -11; i < 11; ++i)

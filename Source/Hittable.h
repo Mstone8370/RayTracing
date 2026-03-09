@@ -12,6 +12,8 @@ struct FHitRecord
     FVector HitLocation = FVector::ZeroVector;
     FVector Normal = FVector::ForwardVector;
     double HitT = 0.0;
+    double U = 0.0;
+    double V = 0.0;
     bool bFrontFace = false;
     std::shared_ptr<IMaterial> Material = nullptr;
 

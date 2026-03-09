@@ -105,6 +105,36 @@ double FMath::Abs(double Value)
     return std::abs(Value);
 }
 
+double FMath::Floor(double Value)
+{
+    return std::floor(Value);
+}
+
+double FMath::Round(double Value)
+{
+    return std::round(Value);
+}
+
+double FMath::Ceil(double Value)
+{
+    return std::round(Value);
+}
+
+int FMath::FloorToInt(double Value)
+{
+    return static_cast<int>(FMath::Floor(Value));
+}
+
+int FMath::RountToInt(double Value)
+{
+    return static_cast<int>(FMath::Round(Value));
+}
+
+int FMath::CeilToInt(double Value)
+{
+    return static_cast<int>(FMath::Ceil(Value));
+}
+
 FVector FMath::Reflect(const FVector& V, const FVector& Normal)
 {
     return V - 2.0 * Dot(V, Normal) * Normal;
