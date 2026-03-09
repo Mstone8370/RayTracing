@@ -47,4 +47,19 @@ protected:
     FAABB BBox;
     
     std::shared_ptr<IMaterial> Material;
+
+    static void GetSphereUV(const FVector& P, double& OutU, double& OutV)
+    {
+        /**
+         * P: A given point on the sphere of radius one, centered at the origin.
+         * OutU: Returned value [0, 1] of angle around the Z axis from X = -1.
+         * OutV: Returned value [0, 1] of angle from Z = +1 to Z = -1.
+         */
+
+        double Phi = std::atan2(P.Y, -P.X);
+        double Theta = std::acos(P.Z);
+
+        OutU = Phi / (2 * PI);
+        OutV = Theta / PI;
+    }
 };

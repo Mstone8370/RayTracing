@@ -14,9 +14,10 @@
 
 #include <iostream>
 
-int main()
+void BouncingSpheres()
 {
     FHittableList World;
+    
     std::shared_ptr<FCheckerTexture> CheckerTexture = std::make_shared<FCheckerTexture>(0.32, FColor(0.2, 0.3, 0.1), FColor(0.9, 0.9, 0.9));
     std::shared_ptr<IMaterial> GroundMaterial = std::make_shared<FLambertian>(CheckerTexture);
     World.Add(std::make_shared<FSphere>(FVector(0.0, 0.0, -1000.), 1000.0, GroundMaterial));
@@ -77,4 +78,40 @@ int main()
     Camera.SetFocusDistance(10.0);
 
     Camera.Render(World);
+}
+
+void CheckeredSpheres()
+{
+    FHittableList World;
+    
+    std::shared_ptr<FCheckerTexture> CheckerTexture = std::make_shared<FCheckerTexture>(0.32, FColor(0.2, 0.3, 0.1), FColor(0.9, 0.9, 0.9));
+    std::shared_ptr<IMaterial> GroundMaterial = std::make_shared<FLambertian>(CheckerTexture);
+    
+    World.Add(std::make_shared<FSphere>(FVector(0.0, 0.0, -10.), 10.0, GroundMaterial));
+    World.Add(std::make_shared<FSphere>(FVector(0.0, 0.0, 10.), 10.0, GroundMaterial));
+    
+
+    FCamera Camera(16.0 / 9.0, 400);
+    Camera.SetSamplesPerPixel(100);
+    Camera.SetMaxDepth(50);
+    Camera.SetVerticalFov(20.0); // (Horizontal FOV: 110) == (Vertical FOV: 78) at 16:9 aspect ratio
+    Camera.SetLocation(FVector(-3.0, 13.0, 2.0));
+    Camera.SetLookAt(FVector(0.0, 0.0, 0.0));
+    Camera.SetDefocusAngle(0.0);
+
+    Camera.Render(World);
+}
+
+
+int main()
+{
+    switch(2)
+    {
+    case 1:
+        BouncingSpheres();
+        break;
+    case 2:
+        CheckeredSpheres();
+        break;
+    }
 }

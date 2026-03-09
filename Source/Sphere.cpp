@@ -34,6 +34,7 @@ bool FSphere::Hit(const FRay& Ray, const FInterval& Interval, FHitRecord& OutHit
     OutHitRecord.HitLocation = Ray.At(HitT);
     const FVector OutwardNormal = (OutHitRecord.HitLocation - CurrentLocation) / Radius;
     OutHitRecord.SetFaceNormal(Ray, OutwardNormal);
+    GetSphereUV(OutwardNormal, OutHitRecord.U, OutHitRecord.V);
     OutHitRecord.Material = Material;
 
     return true;
